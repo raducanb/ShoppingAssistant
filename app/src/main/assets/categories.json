@@ -4,11 +4,15 @@
     "id": 1
   },
   {
-    "name": "Imbracaminte",
+    "name": "Fructe",
     "id": 2
   },
   {
-    "name": "Articole de imbracaminte",
+    "name": "Imbracaminte",
     "id": 3
+  },
+  {
+    "name": "Pescuit",
+    "id": 4
   }
 ]
