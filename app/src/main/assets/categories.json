@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Alimente",
+    "id": 1
+  },
+  {
+    "name": "Imbracaminte",
+    "id": 2
+  },
+  {
+    "name": "Articole de imbracaminte",
+    "id": 3
+  }
+]
