@@ -18,16 +18,3 @@ public class Category implements Serializable {
         this.id = id;
     }
 }
-
-public class CategoriesList {
-    private static ArrayList<Category> categories;
-
-    public static ArrayList<Category> all(Context context) {
-        if (categories) {
-            return categories;
-        }
-
-        categories = JSONArrayLoader.<Category>load(context, "categories.json");
-        return categories;
-    }
-}

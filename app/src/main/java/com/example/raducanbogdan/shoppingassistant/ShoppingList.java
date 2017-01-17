@@ -34,6 +34,10 @@ public class ShoppingList {
         this.saveItems(this.context);
     }
 
+    public ArrayList<ShoppingItem> items() {
+        return this.items;
+    }
+
     private void saveItems(Context context) {
         try {
             FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);

@@ -1,5 +1,7 @@
 package com.example.raducanbogdan.shoppingassistant;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,16 +21,27 @@ public class ShoppingListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         ShoppingList sl = new ShoppingList(this);
-        CategoriesList.all(this);
+        sl.items();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+            fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent myIntent = new Intent(ShoppingListActivity.this, AddShoppingItemActivity.class);
+                ShoppingListActivity.this.startActivityForResult(myIntent, 0);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Activity.RESULT_CANCELED) { return; }
+        if (resultCode == Activity.RESULT_OK) {
+            ShoppingItem item = (ShoppingItem)data.getSerializableExtra("item");
+            saveShoppingItem(item);
+        }
     }
 
     @Override
@@ -38,18 +51,9 @@ public class ShoppingListActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    private void saveShoppingItem(ShoppingItem item) {
+        ShoppingList list = new ShoppingList(this);
+        list.addItem(item);
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }

@@ -2,6 +2,7 @@ package com.example.raducanbogdan.shoppingassistant;
 
 import android.content.Context;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -17,19 +18,3 @@ public class Shop {
         this.categories = categories;
     }
 }
-
-public class ShopsList {
-    private static ArrayList<Shop> shops;
-
-    public static ArrayList<Shop> all(Context context) {
-        if (shops) {
-            return shops;
-        }
-
-        shops = JSONArrayLoader.<Shop>load(context, "categories.json");
-        return shops;
-    }
-}
-
-
-

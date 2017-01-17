@@ -13,13 +13,12 @@ import java.util.ArrayList;
  * Created by raducanbogdan on 1/16/17.
  */
 
-public class JSONArrayLoader {
-
-    static public <T> ArrayList<T> load(Context context, String fileName) {
+public class JSONArrayLoader<T> {
+    public ArrayList<T> load(Context context, String fileName) {
         Gson gson = new Gson();
-        Type listType = new TypeToken<ArrayList<T>>(){}.getType();
+        Type listType = new TypeToken<ArrayList<Category>>(){}.getType();
 
-        ArrayList<Category> a = new ArrayList<>();
+        ArrayList<T> a = new ArrayList<>();
         try {
             a = new Gson().fromJson(loadJSONFromAsset(context, fileName), listType);
         } catch (Exception e) {
@@ -29,7 +28,7 @@ public class JSONArrayLoader {
         return a;
     }
 
-    private static String loadJSONFromAsset(Context context, String fileName) {
+    static String loadJSONFromAsset(Context context, String fileName) {
         String json = null;
         try {
             InputStream is = context.getAssets().open(fileName);
