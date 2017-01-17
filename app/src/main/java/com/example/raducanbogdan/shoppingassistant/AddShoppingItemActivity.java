@@ -80,7 +80,7 @@ public class AddShoppingItemActivity extends AppCompatActivity {
     }
 
     private void showNeedToFillNameError(View view) {
-        Snackbar.make(view, "You need to fill name", Snackbar.LENGTH_LONG)
+        Snackbar.make(view, "You need to fill in the name", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
     }
 
