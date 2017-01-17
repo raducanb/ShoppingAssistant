@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -24,16 +25,15 @@ public class ShopsMapActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_shopping_item);
+        setContentView(R.layout.activity_shops_map);
 
-        Intent i = getIntent();
-        this.shopsList = (ArrayList<Shop>)i.getSerializableExtra("shops");
+        this.shopsList = Shops.all(this);
         setupMapFragment();
     }
 
     private void setupMapFragment() {
-        MapFragment mapFragment = (MapFragment)getFragmentManager().findFragmentById(R.id.shops_map_fragment));
-        mapFragment.getMapAsync(this);
+        SupportMapFragment mMapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
+        mMapFragment.getMapAsync(this);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class ShopsMapActivity
     }
 
     private MarkerOptions markerOptionsForShop(Shop shop) {
-        LatLng coord = new LatLng(shop.coordinates["lat"], shop.coordinates["lng"]);
+        LatLng coord = new LatLng(shop.coordinates.get("lat").doubleValue(), shop.coordinates.get("lng").doubleValue());
         String title = shop.name;
         String subtitle = shop.categoriesNamesStiched();
         return new MarkerOptions().position(coord)

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.widget.ListView;
@@ -50,6 +51,11 @@ public class ShoppingListActivity extends AppCompatActivity implements ShoppingL
         shoppingListView.setAdapter(this.shoppingListAdapter);
     }
 
+    private void showShopsMapActivity() {
+        Intent myIntent = new Intent(ShoppingListActivity.this, ShopsMapActivity.class);
+        ShoppingListActivity.this.startActivity(myIntent);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -63,9 +69,17 @@ public class ShoppingListActivity extends AppCompatActivity implements ShoppingL
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_shopping_list, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_see_all_shops:
+                showShopsMapActivity();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

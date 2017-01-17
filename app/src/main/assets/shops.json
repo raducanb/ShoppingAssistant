@@ -1,5 +1,5 @@
 {
-  "categories": [
+  "shops": [
     {
       "name": "Auchan",
       "categories_ids": [
@@ -8,8 +8,8 @@
         "3"
       ],
       "coordinates": {
-        "lat": 42.3,
-        "lng": 42.5
+        "lat": 47.1555157,
+        "lng": 27.5870558
       }
     },
     {
@@ -18,18 +18,18 @@
         "3"
       ],
       "coordinates": {
-        "lat": 42.3,
-        "lng": 42.5
+        "lat": 47.1575894,
+        "lng": 27.587024
       }
     },
     {
-      "name": "Pescarie",
+      "name": "Magazinu' lu Peste",
       "categories_ids": [
         "4"
       ],
       "coordinates": {
-        "lat": 42.3,
-        "lng": 42.5
+        "lat": 47.1527241,
+        "lng": 27.56462
       }
     }
   ]
