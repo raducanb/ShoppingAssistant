@@ -30,7 +30,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <ListView
-            android:id="@+id/shopping_list"
+            android:id="@+id/shopping_list_view"
             android:layout_width="match_parent"
             android:layout_height="569dp">
         </ListView>

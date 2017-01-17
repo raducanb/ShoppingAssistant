@@ -4,14 +4,17 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
-import android.view.MenuItem;
+import android.widget.ListView;
 
-public class ShoppingListActivity extends AppCompatActivity {
+import java.util.ArrayList;
+
+public abstract class ShoppingListActivity extends AppCompatActivity implements ShoppingListAdapterProtocol {
+    private ShoppingList shoppingList;
+    private ShoppingListAdapter shoppingListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,17 +23,31 @@ public class ShoppingListActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        ShoppingList sl = new ShoppingList(this);
-        sl.items();
+        setupShoppingListView((ListView)findViewById(R.id.shopping_list_view));
+        setupAddShoppingItemFAB();
+    }
 
+    private void saveShoppingItem(ShoppingItem item) {
+        this.shoppingList.addItem(item);
+    }
+
+    private void setupAddShoppingItemFAB() {
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-            fab.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent myIntent = new Intent(ShoppingListActivity.this, AddShoppingItemActivity.class);
                 ShoppingListActivity.this.startActivityForResult(myIntent, 0);
             }
         });
+    }
+
+    private void setupShoppingListView(ListView shoppingListView) {
+        this.shoppingList = new ShoppingList(this);
+        ArrayList shoppingItems = this.shoppingList.items();
+        this.shoppingListAdapter = new ShoppingListAdapter(this, shoppingItems);
+        this.shoppingListAdapter.delegate = this;
+        shoppingListView.setAdapter(this.shoppingListAdapter);
     }
 
     @Override
@@ -51,9 +68,9 @@ public class ShoppingListActivity extends AppCompatActivity {
         return true;
     }
 
-    private void saveShoppingItem(ShoppingItem item) {
-        ShoppingList list = new ShoppingList(this);
-        list.addItem(item);
-
+    @Override
+    public void didCheckItem(ShoppingItem item) {
+        this.shoppingList.removeItem(item);
+        this.shoppingListAdapter.notifyDataSetChanged();
     }
 }
