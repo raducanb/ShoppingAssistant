@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.raducanbogdan.shoppingassistant.ShoppingListActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_see_all_shops"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:title="See all shops"
         app:showAsAction="never" />
 </menu>

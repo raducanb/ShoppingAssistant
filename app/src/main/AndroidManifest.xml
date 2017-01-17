@@ -19,6 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".AddShoppingItemActivity"></activity>
+        <activity android:name=".ShopsMapActivity"></activity>
     </application>
 
 </manifest>
