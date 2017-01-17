@@ -17,4 +17,17 @@ public class Category implements Serializable {
         this.name = name;
         this.id = id;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!Person.class.isAssignableFrom(obj.getClass())) {
+            return false;
+        }
+        final Category other = (Category)obj;
+
+        return this.id.equals(other.id);
+    }
 }
