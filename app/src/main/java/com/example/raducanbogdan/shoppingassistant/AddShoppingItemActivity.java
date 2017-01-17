@@ -27,7 +27,7 @@ public class AddShoppingItemActivity extends AppCompatActivity {
 
     private void setupCategoriesSpinner() {
         Spinner spinner = (Spinner)findViewById(R.id.categories_spinner);
-        ArrayList<Category> categories = CategoriesList.all(this);
+        ArrayList<Category> categories = Categories.all(this);
         ArrayList<String> categoriesNames = new ArrayList<>();
         for (Category category : categories) {
             categoriesNames.add(category.name);
@@ -87,6 +87,6 @@ public class AddShoppingItemActivity extends AppCompatActivity {
     private Category selectedCategory() {
         Spinner spinner = (Spinner)findViewById(R.id.categories_spinner);
         int selectedPos = spinner.getSelectedItemPosition();
-        return CategoriesList.all(this).get(selectedPos);
+        return Categories.all(this).get(selectedPos);
     }
 }

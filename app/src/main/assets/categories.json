@@ -1,18 +1,20 @@
-[
-  {
-    "name": "Alimente",
-    "id": 1
-  },
-  {
-    "name": "Fructe",
-    "id": 2
-  },
-  {
-    "name": "Imbracaminte",
-    "id": 3
-  },
-  {
-    "name": "Pescuit",
-    "id": 4
-  }
-]
+{
+  "categories" : [
+    {
+      "name": "Alimente",
+      "id": 1
+    },
+    {
+      "name": "Fructe",
+      "id": 2
+    },
+    {
+      "name": "Imbracaminte",
+      "id": 3
+    },
+    {
+      "name": "Pescuit",
+      "id": 4
+    }
+  ]
+}

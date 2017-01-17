@@ -1,26 +1,36 @@
-[
-  {
-    "name": "Auchan",
-    "categories_ids": ["1", "2", "3"],
-    "coordinates": {
-      "lat": 42.3,
-      "lng": 42.5
+{
+  "categories": [
+    {
+      "name": "Auchan",
+      "categories_ids": [
+        "1",
+        "2",
+        "3"
+      ],
+      "coordinates": {
+        "lat": 42.3,
+        "lng": 42.5
+      }
+    },
+    {
+      "name": "Nike",
+      "categories_ids": [
+        "3"
+      ],
+      "coordinates": {
+        "lat": 42.3,
+        "lng": 42.5
+      }
+    },
+    {
+      "name": "Pescarie",
+      "categories_ids": [
+        "4"
+      ],
+      "coordinates": {
+        "lat": 42.3,
+        "lng": 42.5
+      }
     }
-  },
-  {
-    "name": "Nike",
-    "categories_ids": ["3"],
-    "coordinates": {
-      "lat": 42.3,
-      "lng": 42.5
-    }
-  },
-  {
-    "name": "Pescarie",
-    "categories_ids": ["4"],
-    "coordinates": {
-      "lat": 42.3,
-      "lng": 42.5
-    }
-  }
-]
+  ]
+}

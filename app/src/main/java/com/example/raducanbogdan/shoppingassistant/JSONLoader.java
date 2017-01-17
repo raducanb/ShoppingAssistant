@@ -13,19 +13,17 @@ import java.util.ArrayList;
  * Created by raducanbogdan on 1/16/17.
  */
 
-public class JSONArrayLoader<T> {
-    public ArrayList<T> load(Context context, String fileName) {
+public class JSONLoader {
+    public static Object load(Context context, String fileName, Class deserializationClass) {
         Gson gson = new Gson();
-        Type listType = new TypeToken<ArrayList<T>>(){}.getType();
-
-        ArrayList<T> a = new ArrayList<>();
+        Object obj = null;
         try {
-            a = new Gson().fromJson(loadJSONFromAsset(context, fileName), listType);
+            obj = new Gson().fromJson(loadJSONFromAsset(context, fileName), deserializationClass);
         } catch (Exception e) {
             System.out.println(e);
         }
 
-        return a;
+        return obj;
     }
 
     static String loadJSONFromAsset(Context context, String fileName) {

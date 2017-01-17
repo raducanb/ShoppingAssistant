@@ -12,7 +12,7 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-public abstract class ShoppingListActivity extends AppCompatActivity implements ShoppingListAdapterProtocol {
+public class ShoppingListActivity extends AppCompatActivity implements ShoppingListAdapterProtocol {
     private ShoppingList shoppingList;
     private ShoppingListAdapter shoppingListAdapter;
 
