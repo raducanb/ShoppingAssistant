@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class JSONArrayLoader<T> {
     public ArrayList<T> load(Context context, String fileName) {
         Gson gson = new Gson();
-        Type listType = new TypeToken<ArrayList<Category>>(){}.getType();
+        Type listType = new TypeToken<ArrayList<T>>(){}.getType();
 
         ArrayList<T> a = new ArrayList<>();
         try {
