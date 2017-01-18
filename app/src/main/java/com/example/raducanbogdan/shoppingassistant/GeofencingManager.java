@@ -1,22 +1,56 @@
 package com.example.raducanbogdan.shoppingassistant;
 
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Result;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationServices;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+
+import static com.google.android.gms.location.Geofence.NEVER_EXPIRE;
 
 /**
  * Created by raducanbogdan on 1/17/17.
  */
 
-public class GeofencingManager {
-    public void addGeofencesForShopsThatHaveCategory(String prodId, ArrayList<Shop> shops, Category category) {
-        ArrayList<Shop> shopsWithCategory = shopsThatHaveCategory(shops, category);
+public class GeofencingManager
+        implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        ResultCallback {
+    static PendingIntent mGeofencePendingIntent;
+    private GoogleApiClient googleApiClient;
 
+    public void addGeofencesForShopsThatHaveCategory(Context context, String prodId,
+                                                     ArrayList<Shop> shops, Category category) {
+        ArrayList<Shop> shopsWithCategory = shopsThatHaveCategory(shops, category);
+        ArrayList<Geofence> geofences = geofencesForShops(prodId, shops);
+
+        createGoogleApi(context);
+        LocationServices.GeofencingApi.addGeofences(
+                this.googleApiClient,
+                geofencingRequestForGeofences(geofences),
+                getGeofencePendingIntent(context))
+                .setResultCallback(this);
+    }
+
+    public void connectGoogleApi() {
+        this.googleApiClient.connect();
+    }
+
+    public void stopGoogleApi() {
+        this.googleApiClient.disconnect();
     }
 
     private ArrayList<Shop> shopsThatHaveCategory(ArrayList<Shop> shops, Category category) {
@@ -28,9 +62,14 @@ public class GeofencingManager {
         return shopsWithCategory;
     }
 
-    private void addGeofencesForShops(String prodId, ArrayList<Shop> shops) {
-        ArrayList<Geofence> geofences = geofencesForShops(prodId, shops);
 
+    private void createGoogleApi(Context context) {
+        if (this.googleApiClient != null) { return; }
+        this.googleApiClient = new GoogleApiClient.Builder(context)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
     }
 
     private GeofencingRequest geofencingRequestForGeofences(ArrayList<Geofence> geofences) {
@@ -52,20 +91,43 @@ public class GeofencingManager {
         return new Geofence.Builder()
                 .setRequestId(prodId)
                 .setCircularRegion(
-                        shop.coordinates["lat"],
-                        shop.coordinates["lng"],
+                        shop.coordinates.get("lat").doubleValue(),
+                        shop.coordinates.get("lng").doubleValue(),
                         100
                 )
-                .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+                .setExpirationDuration(NEVER_EXPIRE)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
                 .build();
     }
 
-    private PendingIntent getGeofencePendingIntent() {
-        Intent intent = new Intent(this, GeofenceTransitionsIntentService.class);
-        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
-        // calling addGeofences() and removeGeofences().
-        return PendingIntent.getService(this, 0, intent, PendingIntent.
-                FLAG_UPDATE_CURRENT);
+    private PendingIntent getGeofencePendingIntent(Context context) {
+        if (mGeofencePendingIntent != null) {
+            return mGeofencePendingIntent;
+        }
+
+        Intent intent = new Intent(context, GeofenceTransitionService.class);
+        mGeofencePendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.
+                    FLAG_UPDATE_CURRENT);
+        return mGeofencePendingIntent;
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.i("1", "onConnected()");
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.i("1", "onConnectionSuspended()");
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.i("1", "onConnectionFailed()");
+    }
+
+    @Override
+    public void onResult(@NonNull Result result) {
+        Log.i("1", "results() " + result);
     }
 }

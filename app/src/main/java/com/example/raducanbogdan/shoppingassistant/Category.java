@@ -23,7 +23,7 @@ public class Category implements Serializable {
         if (obj == null) {
             return false;
         }
-        if (!Person.class.isAssignableFrom(obj.getClass())) {
+        if (!Category.class.isAssignableFrom(obj.getClass())) {
             return false;
         }
         final Category other = (Category)obj;

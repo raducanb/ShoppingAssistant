@@ -1,6 +1,7 @@
 package com.example.raducanbogdan.shoppingassistant;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 public class ShoppingListActivity extends AppCompatActivity implements ShoppingListAdapterProtocol {
     private ShoppingList shoppingList;
     private ShoppingListAdapter shoppingListAdapter;
+    private GeofencingManager geofencingManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,8 +26,16 @@ public class ShoppingListActivity extends AppCompatActivity implements ShoppingL
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        this.geofencingManager = new GeofencingManager();
+        geofencingManager.addGeofencesForShopsThatHaveCategory(this, "1", Shops.all(this), Categories.all(this).get(0));
+
         setupShoppingListView((ListView)findViewById(R.id.shopping_list_view));
         setupAddShoppingItemFAB();
+    }
+
+    public static Intent makeNotificationIntent(Context context) {
+        Intent intent = new Intent(context, ShoppingListActivity.class);
+        return intent;
     }
 
     private void saveShoppingItem(ShoppingItem item) {
