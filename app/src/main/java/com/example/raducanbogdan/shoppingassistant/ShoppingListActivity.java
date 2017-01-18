@@ -27,10 +27,17 @@ public class ShoppingListActivity extends AppCompatActivity implements ShoppingL
         setSupportActionBar(toolbar);
 
         this.geofencingManager = new GeofencingManager();
-        geofencingManager.addGeofencesForShopsThatHaveCategory(this, "1", Shops.all(this), Categories.all(this).get(0));
 
         setupShoppingListView((ListView)findViewById(R.id.shopping_list_view));
         setupAddShoppingItemFAB();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        geofencingManager.addGeofencesForShopsThatHaveCategory(this, "1", Shops.all(this), Categories.all(this).get(0));
+        geofencingManager.connectGoogleApi();
     }
 
     public static Intent makeNotificationIntent(Context context) {

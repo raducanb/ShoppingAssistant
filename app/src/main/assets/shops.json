@@ -2,10 +2,19 @@
   "shops": [
     {
       "name": "Auchan",
-      "categories_ids": [
-        "1",
-        "2",
-        "3"
+      "categories": [
+        {
+          "name": "Alimente",
+          "id": 1
+        },
+        {
+          "name": "Fructe",
+          "id": 2
+        },
+        {
+          "name": "Imbracaminte",
+          "id": 3
+        }
       ],
       "coordinates": {
         "lat": 47.1555157,
@@ -14,8 +23,11 @@
     },
     {
       "name": "Nike",
-      "categories_ids": [
-        "3"
+      "categories": [
+        {
+          "name": "Imbracaminte",
+          "id": 3
+        }
       ],
       "coordinates": {
         "lat": 47.1575894,
@@ -24,8 +36,11 @@
     },
     {
       "name": "Magazinu' lu Peste",
-      "categories_ids": [
-        "4"
+      "categories": [
+        {
+          "name": "Pescuit",
+          "id": 4
+        }
       ],
       "coordinates": {
         "lat": 47.1527241,
