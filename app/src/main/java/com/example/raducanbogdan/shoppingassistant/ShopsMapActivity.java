@@ -4,11 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
@@ -38,14 +41,25 @@ public class ShopsMapActivity
 
     @Override
     public void onMapReady(final GoogleMap map) {
-        showPinsForShops(map, this.shopsList);
+        ArrayList<MarkerOptions> markerOptionses = markerOptionsesForShops(this.shopsList);
+        showMarkers(map, markerOptionses);
+        centerMarkers(map, markerOptionses);
     }
 
-    private void showPinsForShops(GoogleMap map, ArrayList<Shop> shops) {
-        ArrayList<MarkerOptions> markerOptionses = markerOptionsesForShops(shops);
+    private void showMarkers(GoogleMap map, ArrayList<MarkerOptions> markerOptionses) {
         for (MarkerOptions markerOptions : markerOptionses) {
             map.addMarker(markerOptions);
         }
+    }
+
+    private void centerMarkers(GoogleMap map, ArrayList<MarkerOptions> markerOptionses) {
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (MarkerOptions markerOptions : markerOptionses) {
+            builder.include(markerOptions.getPosition());
+        }
+        LatLngBounds bounds = builder.build();
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 100);
+        map.animateCamera(cu);
     }
 
     private ArrayList<MarkerOptions> markerOptionsesForShops(ArrayList<Shop> shops) {
