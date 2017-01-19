@@ -14,11 +14,13 @@ import java.util.stream.Collectors;
  */
 
 public class Shop implements Serializable {
+    public final String id;
     public final String name;
     public final ArrayList<Category> categories;
     public final HashMap<String, Double> coordinates;
 
-    public Shop(String name, ArrayList<Category> categories, HashMap<String, Double> coordinates) {
+    public Shop(String id, String name, ArrayList<Category> categories, HashMap<String, Double> coordinates) {
+        this.id = id;
         this.name = name;
         this.categories = categories;
         this.coordinates = coordinates;

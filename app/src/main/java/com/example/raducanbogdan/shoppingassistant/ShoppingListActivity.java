@@ -3,9 +3,7 @@ package com.example.raducanbogdan.shoppingassistant;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -15,13 +13,12 @@ import android.view.View;
 import android.view.Menu;
 import android.widget.ListView;
 
-import com.google.android.gms.location.GeofencingEvent;
-
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ShoppingListActivity
         extends AppCompatActivity
-        implements ShoppingListAdapterProtocol, GoogleApiConnectHandler {
+        implements ShoppingListAdapterProtocol {
     private ShoppingList shoppingList;
     private ShoppingListAdapter shoppingListAdapter;
     private GeofencingManager geofencingManager;
@@ -45,8 +42,41 @@ public class ShoppingListActivity
         return intent;
     }
 
-    private void saveShoppingItem(ShoppingItem item) {
+    private void addShoppingItem(ShoppingItem item) {
         this.shoppingList.addItem(item);
+        this.shoppingListAdapter.notifyDataSetChanged();
+        addGeofenceForShoppingItem(item);
+    }
+
+    private void removeShoppingItem(ShoppingItem item) {
+        this.shoppingList.removeItem(item);
+        this.shoppingListAdapter.notifyDataSetChanged();
+
+        ArrayList<Category> remainingCategories = this.shoppingList.categories();
+        boolean didRemoveLastItemWithThisCategory = !remainingCategories.contains(item.category);
+        if (!didRemoveLastItemWithThisCategory) { return; }
+
+        removeGeofencesForNeededShopsAfterItemDeleted(item, remainingCategories);
+    }
+
+    private void removeGeofencesForNeededShopsAfterItemDeleted(ShoppingItem item,
+                                                               ArrayList<Category> remainingCategories) {
+        ArrayList<String> shopIdsToRemoveGeofence = new ArrayList<>();
+        for (Shop shop : Shops.all(this)) {
+            boolean shopDoesntHaveDeletedItemCategory = !shop.categories.contains(item.category);
+            if (shopDoesntHaveDeletedItemCategory) { continue; }
+            boolean shopHasOtherItemsCategories =
+                    !Collections.disjoint(shop.categories, remainingCategories);
+            if (shopHasOtherItemsCategories) { continue; }
+
+            shopIdsToRemoveGeofence.add(shop.id);
+        }
+
+        this.geofencingManager.removeGeofenceForShopIds(shopIdsToRemoveGeofence);
+    }
+
+    private void addGeofenceForShoppingItem(ShoppingItem item) {
+        this.geofencingManager.addGeofencesForShopsThatHaveCategory(this, Shops.all(this), item.category);
     }
 
     private void setupAddShoppingItemFAB() {
@@ -80,7 +110,7 @@ public class ShoppingListActivity
         if (resultCode == Activity.RESULT_CANCELED) { return; }
         if (resultCode == Activity.RESULT_OK) {
             ShoppingItem item = (ShoppingItem)data.getSerializableExtra("item");
-            saveShoppingItem(item);
+            addShoppingItem(item);
         }
     }
 
@@ -101,8 +131,7 @@ public class ShoppingListActivity
 
     @Override
     public void didCheckItem(ShoppingItem item) {
-        this.shoppingList.removeItem(item);
-        this.shoppingListAdapter.notifyDataSetChanged();
+        removeShoppingItem(item);
     }
 
     @Override
@@ -110,13 +139,7 @@ public class ShoppingListActivity
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == 0) {
-            this.geofencingManager.connectGoogleApi(this, this);
+            this.geofencingManager.connectGoogleApi(this);
         }
-    }
-
-    @Override
-    public void googleApiDidConnectWithSuccess(boolean isSuccess) {
-        if (!isSuccess) { return; }
-//        geofencingManager.addGeofencesForShopsThatHaveCategory(this, "1", Shops.all(this), Categories.all(this).get(0));
     }
 }

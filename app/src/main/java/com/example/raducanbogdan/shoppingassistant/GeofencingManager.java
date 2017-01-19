@@ -19,6 +19,7 @@ import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static com.google.android.gms.location.Geofence.NEVER_EXPIRE;
 
@@ -26,21 +27,21 @@ import static com.google.android.gms.location.Geofence.NEVER_EXPIRE;
  * Created by raducanbogdan on 1/17/17.
  */
 
-interface GoogleApiConnectHandler {
-    public void googleApiDidConnectWithSuccess(boolean isSuccess);
-}
-
 public class GeofencingManager
         implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         ResultCallback {
     static PendingIntent mGeofencePendingIntent;
     private GoogleApiClient googleApiClient;
-    private GoogleApiConnectHandler handler;
 
-    public void addGeofencesForShopsThatHaveCategory(Context context, String prodId,
-                                                     ArrayList<Shop> shops, Category category) {
+    public void removeGeofenceForShopIds(ArrayList<String> shopIds) {
+        LocationServices.GeofencingApi.removeGeofences(this.googleApiClient, shopIds)
+                .setResultCallback(this);
+    }
+
+    public void addGeofencesForShopsThatHaveCategory(Context context, ArrayList<Shop> shops,
+                                                     Category category) {
         ArrayList<Shop> shopsWithCategory = shopsThatHaveCategory(shops, category);
-        ArrayList<Geofence> geofences = geofencesForShops(prodId, shops);
+        ArrayList<Geofence> geofences = geofencesForShops(shopsWithCategory);
 
         if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -52,8 +53,7 @@ public class GeofencingManager
                 .setResultCallback(this);
     }
 
-    public void connectGoogleApi(Context context, GoogleApiConnectHandler handler) {
-        this.handler = handler;
+    public void connectGoogleApi(Context context) {
         createGoogleApi(context);
         this.googleApiClient.connect();
     }
@@ -88,17 +88,17 @@ public class GeofencingManager
         return builder.build();
     }
 
-    private ArrayList<Geofence> geofencesForShops(String prodId, ArrayList<Shop> shops) {
+    private ArrayList<Geofence> geofencesForShops(ArrayList<Shop> shops) {
         ArrayList<Geofence> geofences = new ArrayList<>();
         for (Shop shop : shops) {
-            geofences.add(geofenceForShop(prodId, shop));
+            geofences.add(geofenceForShop(shop));
         }
         return geofences;
     }
 
-    private Geofence geofenceForShop(String prodId, Shop shop) {
+    private Geofence geofenceForShop(Shop shop) {
         return new Geofence.Builder()
-                .setRequestId(prodId)
+                .setRequestId(shop.id)
                 .setCircularRegion(
                         shop.coordinates.get("lat").doubleValue(),
                         shop.coordinates.get("lng").doubleValue(),
@@ -123,7 +123,6 @@ public class GeofencingManager
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.i("1", "onConnected()");
-        this.handler.googleApiDidConnectWithSuccess(true);
     }
 
     @Override
@@ -134,7 +133,6 @@ public class GeofencingManager
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.i("1", "onConnectionFailed()");
-        this.handler.googleApiDidConnectWithSuccess(false);
     }
 
     @Override

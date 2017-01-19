@@ -1,6 +1,7 @@
 {
   "shops": [
     {
+      "id" : "1",
       "name": "Auchan",
       "categories": [
         {
@@ -22,6 +23,7 @@
       }
     },
     {
+      "id" : "2",
       "name": "Nike",
       "categories": [
         {
@@ -35,6 +37,7 @@
       }
     },
     {
+      "id" : "3",
       "name": "Magazinu' lu Peste",
       "categories": [
         {

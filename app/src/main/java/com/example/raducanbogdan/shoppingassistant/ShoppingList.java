@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * Created by raducanbogdan on 1/15/17.
@@ -36,6 +37,14 @@ public class ShoppingList {
 
     public ArrayList<ShoppingItem> items() {
         return this.items;
+    }
+
+    public ArrayList<Category> categories() {
+        HashSet<Category> categories = new HashSet<>();
+        for (ShoppingItem item : this.items) {
+            categories.add(item.category);
+        }
+        return new ArrayList<Category>(categories);
     }
 
     private void saveItems(Context context) {
