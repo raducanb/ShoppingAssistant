@@ -44,8 +44,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AddShoppingItemActivity"></activity>
-        <activity android:name=".ShopsMapActivity"></activity>
+        <activity android:name=".AddShoppingItemActivity" />
+        <activity android:name=".ShopsMapActivity" />
+        <activity android:name=".NearShopsActivity"></activity>
     </application>
 
 </manifest>

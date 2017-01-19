@@ -16,6 +16,7 @@ import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofenceStatusCodes;
 import com.google.android.gms.location.GeofencingEvent;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,38 +46,46 @@ public class GeofenceTransitionService extends IntentService {
         if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
                 geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT ) {
             List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
-            String geofenceTransitionDetails = getGeofenceTrasitionDetails(geoFenceTransition, triggeringGeofences );
-            sendNotification(geofenceTransitionDetails);
+            ArrayList<String> ids = geofencesIds(triggeringGeofences);
+            sendNotification(ids, messageFromGeofencesIds(ids));
         }
     }
 
-    private String getGeofenceTrasitionDetails(int geoFenceTransition, List<Geofence> triggeringGeofences) {
-        ArrayList<String> triggeringGeofencesList = new ArrayList<>();
-        for (Geofence geofence : triggeringGeofences) {
-            triggeringGeofencesList.add( geofence.getRequestId() );
+    private ArrayList<String> geofencesIds(List<Geofence> geofences) {
+        ArrayList<String> ids = new ArrayList<>();
+        for (Geofence geofence : geofences) {
+            ids.add(geofence.getRequestId());
         }
-
-        String status = null;
-        if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER )
-            status = "Entering ";
-        else if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT )
-            status = "Exiting ";
-        return status + TextUtils.join( ", ", triggeringGeofencesList);
+        return ids;
     }
 
-    private void sendNotification( String msg ) {
-        Log.i(TAG, "sendNotification: " + msg );
+    private String messageFromGeofencesIds(ArrayList<String> ids) {
+        ArrayList<Shop> shops = Shops.all(getApplicationContext());
+        ArrayList<String> filteredShopsNames = new ArrayList<>();
+        for (Shop shop : shops) {
+            if (!ids.contains(shop.id)) { continue; }
+            filteredShopsNames.add(shop.name);
+        }
+        StringBuilder message = new StringBuilder();
+        message.append("Esti aproape de ");
+        message.append(filteredShopsNames.size() == 1 ? "magazinul" : "magazinele");
+        message.append(" ");
+        message.append(TextUtils.join(", ", filteredShopsNames) + ".");
+        return message.toString();
+    }
 
-        Intent notificationIntent = ShoppingListActivity.makeNotificationIntent(getApplicationContext());
+    private void sendNotification(ArrayList<String> shopIds, String msg) {
+        Intent notificationIntent = NearShopsActivity.makeNotificationIntent(getApplicationContext());
 
+        notificationIntent.putExtra("shops_ids", shopIds);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addParentStack(ShoppingListActivity.class);
+        stackBuilder.addParentStack(NearShopsActivity.class);
         stackBuilder.addNextIntent(notificationIntent);
         PendingIntent notificationPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationManager notificatioMng =
+        NotificationManager notificationMng =
                 (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-        notificatioMng.notify(
+        notificationMng.notify(
                 GEOFENCE_NOTIFICATION_ID,
                 createNotification(msg, notificationPendingIntent));
     }
@@ -87,7 +96,7 @@ public class GeofenceTransitionService extends IntentService {
                 .setSmallIcon(R.drawable.notification_bell)
                 .setColor(Color.RED)
                 .setContentTitle(msg)
-                .setContentText("Geofence Notification!")
+                .setContentText("Aici sunt produse din lista ta de shopping.")
                 .setContentIntent(notificationPendingIntent)
                 .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE | Notification.DEFAULT_SOUND)
                 .setAutoCancel(true);

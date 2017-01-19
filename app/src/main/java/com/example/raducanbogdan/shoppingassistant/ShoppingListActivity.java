@@ -37,11 +37,6 @@ public class ShoppingListActivity
         setupAddShoppingItemFAB();
     }
 
-    public static Intent makeNotificationIntent(Context context) {
-        Intent intent = new Intent(context, ShoppingListActivity.class);
-        return intent;
-    }
-
     private void addShoppingItem(ShoppingItem item) {
         this.shoppingList.addItem(item);
         this.shoppingListAdapter.notifyDataSetChanged();
