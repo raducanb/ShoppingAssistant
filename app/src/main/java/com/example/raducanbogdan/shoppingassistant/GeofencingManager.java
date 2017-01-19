@@ -26,18 +26,25 @@ import static com.google.android.gms.location.Geofence.NEVER_EXPIRE;
  * Created by raducanbogdan on 1/17/17.
  */
 
+interface GoogleApiConnectHandler {
+    public void googleApiDidConnectWithSuccess(boolean isSuccess);
+}
+
 public class GeofencingManager
         implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         ResultCallback {
     static PendingIntent mGeofencePendingIntent;
     private GoogleApiClient googleApiClient;
+    private GoogleApiConnectHandler handler;
 
     public void addGeofencesForShopsThatHaveCategory(Context context, String prodId,
                                                      ArrayList<Shop> shops, Category category) {
         ArrayList<Shop> shopsWithCategory = shopsThatHaveCategory(shops, category);
         ArrayList<Geofence> geofences = geofencesForShops(prodId, shops);
 
-        createGoogleApi(context);
+        if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
         LocationServices.GeofencingApi.addGeofences(
                 this.googleApiClient,
                 geofencingRequestForGeofences(geofences),
@@ -45,7 +52,9 @@ public class GeofencingManager
                 .setResultCallback(this);
     }
 
-    public void connectGoogleApi() {
+    public void connectGoogleApi(Context context, GoogleApiConnectHandler handler) {
+        this.handler = handler;
+        createGoogleApi(context);
         this.googleApiClient.connect();
     }
 
@@ -114,6 +123,7 @@ public class GeofencingManager
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.i("1", "onConnected()");
+        this.handler.googleApiDidConnectWithSuccess(true);
     }
 
     @Override
@@ -124,6 +134,7 @@ public class GeofencingManager
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.i("1", "onConnectionFailed()");
+        this.handler.googleApiDidConnectWithSuccess(false);
     }
 
     @Override

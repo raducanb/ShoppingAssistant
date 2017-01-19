@@ -3,7 +3,10 @@ package com.example.raducanbogdan.shoppingassistant;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,9 +15,13 @@ import android.view.View;
 import android.view.Menu;
 import android.widget.ListView;
 
+import com.google.android.gms.location.GeofencingEvent;
+
 import java.util.ArrayList;
 
-public class ShoppingListActivity extends AppCompatActivity implements ShoppingListAdapterProtocol {
+public class ShoppingListActivity
+        extends AppCompatActivity
+        implements ShoppingListAdapterProtocol, GoogleApiConnectHandler {
     private ShoppingList shoppingList;
     private ShoppingListAdapter shoppingListAdapter;
     private GeofencingManager geofencingManager;
@@ -26,18 +33,11 @@ public class ShoppingListActivity extends AppCompatActivity implements ShoppingL
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         this.geofencingManager = new GeofencingManager();
 
         setupShoppingListView((ListView)findViewById(R.id.shopping_list_view));
         setupAddShoppingItemFAB();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        geofencingManager.addGeofencesForShopsThatHaveCategory(this, "1", Shops.all(this), Categories.all(this).get(0));
-        geofencingManager.connectGoogleApi();
     }
 
     public static Intent makeNotificationIntent(Context context) {
@@ -103,5 +103,20 @@ public class ShoppingListActivity extends AppCompatActivity implements ShoppingL
     public void didCheckItem(ShoppingItem item) {
         this.shoppingList.removeItem(item);
         this.shoppingListAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == 0) {
+            this.geofencingManager.connectGoogleApi(this, this);
+        }
+    }
+
+    @Override
+    public void googleApiDidConnectWithSuccess(boolean isSuccess) {
+        if (!isSuccess) { return; }
+//        geofencingManager.addGeofencesForShopsThatHaveCategory(this, "1", Shops.all(this), Categories.all(this).get(0));
     }
 }

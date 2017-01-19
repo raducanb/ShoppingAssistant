@@ -1,7 +1,9 @@
 package com.example.raducanbogdan.shoppingassistant;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -10,8 +12,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
@@ -35,7 +39,7 @@ public class ShopsMapActivity
     }
 
     private void setupMapFragment() {
-        SupportMapFragment mMapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mMapFragment.getMapAsync(this);
     }
 
@@ -44,12 +48,24 @@ public class ShopsMapActivity
         ArrayList<MarkerOptions> markerOptionses = markerOptionsesForShops(this.shopsList);
         showMarkers(map, markerOptionses);
         centerMarkers(map, markerOptionses);
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        map.setMyLocationEnabled(true);
     }
 
     private void showMarkers(GoogleMap map, ArrayList<MarkerOptions> markerOptionses) {
         for (MarkerOptions markerOptions : markerOptionses) {
             map.addMarker(markerOptions);
+            map.addCircle(circleOptionsForMarker(markerOptions));
         }
+    }
+
+    private CircleOptions circleOptionsForMarker(MarkerOptions markerOptions) {
+        return new CircleOptions()
+                .center(new LatLng(markerOptions.getPosition().latitude,
+                        markerOptions.getPosition().longitude))
+                .radius(100);
     }
 
     private void centerMarkers(GoogleMap map, ArrayList<MarkerOptions> markerOptionses) {

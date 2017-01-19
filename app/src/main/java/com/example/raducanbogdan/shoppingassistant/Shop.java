@@ -1,10 +1,13 @@
 package com.example.raducanbogdan.shoppingassistant;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by raducanbogdan on 1/16/17.
@@ -22,10 +25,14 @@ public class Shop implements Serializable {
     }
 
     public String categoriesNamesStiched() {
-        StringBuilder categoriesNames = new StringBuilder();
-        for (Category category : this.categories) {
-            categoriesNames.append(category.name);
+        StringBuilder namesBuilder = new StringBuilder();
+        for (int i = 0; i < this.categories.size(); i++) {
+            Category category = this.categories.get(i);
+            namesBuilder.append(category.name);
+            if (i < this.categories.size() - 1) {
+                namesBuilder.append(", ");
+            }
         }
-        return categoriesNames.toString();
+        return namesBuilder.toString();
     }
 }
