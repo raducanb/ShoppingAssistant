@@ -20,6 +20,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
+import static com.example.raducanbogdan.shoppingassistant.GeofencingManager.kShopRadius;
+
 /**
  * Created by raducanbogdan on 1/17/17.
  */
@@ -90,7 +92,7 @@ public class ShopsMapActivity
         return new CircleOptions()
                 .center(new LatLng(markerOptions.getPosition().latitude,
                         markerOptions.getPosition().longitude))
-                .radius(100);
+                .radius(kShopRadius);
     }
 
     private void centerMarkers(GoogleMap map, ArrayList<MarkerOptions> markerOptionses) {

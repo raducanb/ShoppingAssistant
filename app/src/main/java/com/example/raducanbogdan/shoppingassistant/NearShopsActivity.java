@@ -1,5 +1,6 @@
 package com.example.raducanbogdan.shoppingassistant;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class NearShopsActivity extends AppCompatActivity {
+    ArrayList<Shop> shops;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,16 +28,21 @@ public class NearShopsActivity extends AppCompatActivity {
 
         boolean isOnlyOneShop = shopsIds.size() == 1;
         if (isOnlyOneShop) {
-            showDetailsForShop(shopsForIds(shopsIds).get(0));
-            this.finish();
+            setupWithShop(shopsForIds(shopsIds).get(0));
         } else {
-            setupWithShops(shopsForIds(shopsIds));
+            this.shops = shopsForIds(shopsIds);
+            setupWithShops(this.shops);
         }
     }
 
     public static Intent makeNotificationIntent(Context context) {
         Intent intent = new Intent(context, NearShopsActivity.class);
         return intent;
+    }
+
+    private void setupWithShop(Shop shop) {
+        showDetailsForShop(shop, true);
+        this.finish();
     }
 
     private void setupWithShops(final ArrayList<Shop> shops) {
@@ -46,15 +53,19 @@ public class NearShopsActivity extends AppCompatActivity {
         listView.setAdapter(titlesAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                showDetailsForShop(shops.get(position));
+                showDetailsForShop(shops.get(position), false);
             }
         });
     }
 
-    private void showDetailsForShop(Shop shop) {
+    private void showDetailsForShop(Shop shop, boolean isOnlyShop) {
         Intent i = new Intent(NearShopsActivity.this, ShopDetailsActivity.class);
         i.putExtra("shop", shop);
-        startActivity(i);
+        if (isOnlyShop) {
+            startActivity(i);
+        } else {
+            startActivityForResult(i, 0);
+        }
     }
 
     private ArrayList<Shop> shopsForIds(ArrayList<String> ids) {
@@ -80,7 +91,7 @@ public class NearShopsActivity extends AppCompatActivity {
         title.append(shop.name);
         int nrOfProducts = nrOfProductsForShopAndShoppingList(shop, list);
         title.append(" - " + nrOfProducts);
-        title.append(nrOfProducts == 1 ? "produs." : " produse.");
+        title.append(nrOfProducts == 1 ? " produs." : " produse.");
         return title.toString();
     }
 
@@ -91,5 +102,32 @@ public class NearShopsActivity extends AppCompatActivity {
             nrOfProducts++;
         }
         return nrOfProducts;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Activity.RESULT_CANCELED) { return; }
+        if (resultCode == Activity.RESULT_OK) {
+            Shop removedShop = (Shop)data.getSerializableExtra("removedShop");
+            if (removedShop == null) {
+                setupWithShop(this.shops);
+                return;
+            }
+
+            this.shops.remove(removedShop);
+            if (this.shops.size() == 0) {
+                showShoppingList();
+                this.finish();
+            } else {
+                setupWithShops(this.shops);
+            }
+        }
+    }
+
+    private void showShoppingList() {
+        Intent i = new Intent(NearShopsActivity.this, ShoppingListActivity.class);
+        startActivity(i);
     }
 }

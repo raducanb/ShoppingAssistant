@@ -37,4 +37,17 @@ public class Shop implements Serializable {
         }
         return namesBuilder.toString();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!Shop.class.isAssignableFrom(obj.getClass())) {
+            return false;
+        }
+        final Shop other = (Shop)obj;
+
+        return this.id.equals(other.id);
+    }
 }

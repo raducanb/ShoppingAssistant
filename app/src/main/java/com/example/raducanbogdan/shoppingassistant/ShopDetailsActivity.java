@@ -1,5 +1,6 @@
 package com.example.raducanbogdan.shoppingassistant;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -18,6 +19,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -115,6 +117,7 @@ implements OnMapReadyCallback, ShoppingListAdapterProtocol,
     @Override
     public void didCheckItem(ShoppingItem item) {
         removeShoppingItem(item);
+        checkIfNoItemsLeft();
     }
 
     private void removeShoppingItem(ShoppingItem item) {
@@ -129,6 +132,22 @@ implements OnMapReadyCallback, ShoppingListAdapterProtocol,
         }
 
         removeGeofencesForNeededShopsAfterItemDeleted(item, remainingCategories);
+    }
+
+    private void checkIfNoItemsLeft() {
+        if (this.itemsForCurrentShop.size() > 0) { return; }
+
+        boolean isOpenFromOnlyOneShopNotification = (this.getCallingActivity() == null);
+        if (isOpenFromOnlyOneShopNotification) {
+            Intent i = new Intent(ShopDetailsActivity.this, ShoppingListActivity.class);
+            startActivity(i);
+            this.finish();
+        } else {
+            Intent intent = new Intent();
+            intent.putExtra("removedShop", (Serializable)this.shop);
+            setResult(Activity.RESULT_OK, intent);
+            finish();
+        }
     }
 
     private void removeGeofencesForNeededShopsAfterItemDeleted(ShoppingItem item,

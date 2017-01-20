@@ -32,6 +32,7 @@ public class GeofencingManager
         ResultCallback {
     static PendingIntent mGeofencePendingIntent;
     private GoogleApiClient googleApiClient;
+    public static int kShopRadius = 300;
 
     public void removeGeofenceForShopIds(ArrayList<String> shopIds) {
         LocationServices.GeofencingApi.removeGeofences(this.googleApiClient, shopIds)
@@ -102,7 +103,7 @@ public class GeofencingManager
                 .setCircularRegion(
                         shop.coordinates.get("lat").doubleValue(),
                         shop.coordinates.get("lng").doubleValue(),
-                        100
+                        kShopRadius
                 )
                 .setExpirationDuration(NEVER_EXPIRE)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
