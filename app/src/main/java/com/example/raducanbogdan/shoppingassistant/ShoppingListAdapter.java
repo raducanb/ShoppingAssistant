@@ -58,6 +58,7 @@ public class ShoppingListAdapter extends BaseAdapter {
         holder.checkBox.setSelected(false);
         holder.checkBox.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                ((CheckBox)v).setSelected(false);
                 didSelectPosition(pos);
             }
         });
