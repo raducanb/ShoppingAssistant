@@ -34,6 +34,8 @@ public class ShopsMapActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shops_map);
 
+        setTitle("Harta magazine");
+
         this.shopsList = Shops.all(this);
         setupMapFragment();
     }

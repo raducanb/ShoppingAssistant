@@ -19,6 +19,8 @@ public class NearShopsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_near_shops);
 
+        setTitle("Magazine langa tine");
+
         Intent intent = getIntent();
         ArrayList<String> shopsIds = (ArrayList<String>)intent.getSerializableExtra("shops_ids");
 

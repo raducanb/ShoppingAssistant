@@ -21,6 +21,8 @@ public class AddShoppingItemActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_shopping_item);
 
+        setTitle("Adauga produs");
+
         setupCategoriesSpinner();
         setupClickListeners();
     }

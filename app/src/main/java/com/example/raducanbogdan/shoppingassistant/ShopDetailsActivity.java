@@ -37,6 +37,8 @@ implements OnMapReadyCallback, ShoppingListAdapterProtocol,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shop_details);
 
+        setTitle("Detalii magazin");
+
         Intent intent = getIntent();
         this.shop = (Shop) intent.getSerializableExtra("shop");
         this.shoppingList = new ShoppingList(this);
