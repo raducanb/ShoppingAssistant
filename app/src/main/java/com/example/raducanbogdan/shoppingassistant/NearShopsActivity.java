@@ -112,7 +112,7 @@ public class NearShopsActivity extends AppCompatActivity {
         if (resultCode == Activity.RESULT_OK) {
             Shop removedShop = (Shop)data.getSerializableExtra("removedShop");
             if (removedShop == null) {
-                setupWithShop(this.shops);
+                setupWithShops(this.shops);
                 return;
             }
 
