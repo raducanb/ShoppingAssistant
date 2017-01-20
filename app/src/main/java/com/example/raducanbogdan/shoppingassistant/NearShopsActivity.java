@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -20,7 +21,14 @@ public class NearShopsActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         ArrayList<String> shopsIds = (ArrayList<String>)intent.getSerializableExtra("shops_ids");
-        setupWithShops(shopsForIds(shopsIds));
+
+        boolean isOnlyOneShop = shopsIds.size() == 1;
+        if (isOnlyOneShop) {
+            showDetailsForShop(shopsForIds(shopsIds).get(0));
+            this.finish();
+        } else {
+            setupWithShops(shopsForIds(shopsIds));
+        }
     }
 
     public static Intent makeNotificationIntent(Context context) {
@@ -28,7 +36,7 @@ public class NearShopsActivity extends AppCompatActivity {
         return intent;
     }
 
-    private void setupWithShops(ArrayList<Shop> shops) {
+    private void setupWithShops(final ArrayList<Shop> shops) {
         ArrayList<String> titles = titlesWithNrOfProductsForShops(shops);
         ArrayAdapter<String> titlesAdapter =
                 new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, titles);
@@ -36,14 +44,15 @@ public class NearShopsActivity extends AppCompatActivity {
         listView.setAdapter(titlesAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                
-                Intent i = new Intent(More.this, NextActvity.class);
-                //If you wanna send any data to nextActicity.class you can use
-                i.putExtra(String key, value.get(position));
-
-                startActivity(i);
+                showDetailsForShop(shops.get(position));
             }
         });
+    }
+
+    private void showDetailsForShop(Shop shop) {
+        Intent i = new Intent(NearShopsActivity.this, ShopDetailsActivity.class);
+        i.putExtra("shop", shop);
+        startActivity(i);
     }
 
     private ArrayList<Shop> shopsForIds(ArrayList<String> ids) {

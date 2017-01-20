@@ -46,19 +46,42 @@ public class ShopsMapActivity
     @Override
     public void onMapReady(final GoogleMap map) {
         ArrayList<MarkerOptions> markerOptionses = markerOptionsesForShops(this.shopsList);
-        showMarkers(map, markerOptionses);
+        final ArrayList<Marker> markers = showMarkers(map, markerOptionses);
         centerMarkers(map, markerOptionses);
+
+        map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                int pos = markers.indexOf(marker);
+                didSelectShopAtPosition(pos);
+            }
+        });
+
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         map.setMyLocationEnabled(true);
     }
 
-    private void showMarkers(GoogleMap map, ArrayList<MarkerOptions> markerOptionses) {
+    private void didSelectShopAtPosition(int position) {
+        Shop shop = this.shopsList.get(position);
+        showDetailsForShop(shop);
+    }
+
+    private void showDetailsForShop(Shop shop) {
+        Intent i = new Intent(ShopsMapActivity.this, ShopDetailsActivity.class);
+        i.putExtra("shop", shop);
+        startActivity(i);
+    }
+
+    private ArrayList<Marker> showMarkers(GoogleMap map, ArrayList<MarkerOptions> markerOptionses) {
+        ArrayList<Marker> markers = new ArrayList<>();
         for (MarkerOptions markerOptions : markerOptionses) {
-            map.addMarker(markerOptions);
+            Marker marker = map.addMarker(markerOptions);
+            markers.add(marker);
             map.addCircle(circleOptionsForMarker(markerOptions));
         }
+        return markers;
     }
 
     private CircleOptions circleOptionsForMarker(MarkerOptions markerOptions) {
