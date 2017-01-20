@@ -167,6 +167,7 @@ implements OnMapReadyCallback, ShoppingListAdapterProtocol,
             shopIdsToRemoveGeofence.add(shop.id);
         }
 
+        if (shopIdsToRemoveGeofence.size() == 0) { return; }
         this.geofencingManager.removeGeofenceForShopIds(shopIdsToRemoveGeofence);
     }
 
