@@ -49,12 +49,13 @@ public class ShoppingListAdapter extends BaseAdapter {
             holder.checkBox = (CheckBox)convertView.findViewById(R.id.checkBox);
             convertView.setTag(holder);
         } else {
-            holder = (ViewHolder) convertView.getTag();
+            holder = (ViewHolder)convertView.getTag();
         }
 
         final int pos = position;
         holder.titleTextView.setText(listData.get(position).name);
         holder.categoryNameTextView.setText(listData.get(position).category.name);
+        holder.checkBox.setSelected(false);
         holder.checkBox.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 didSelectPosition(pos);

@@ -35,6 +35,12 @@ public class NearShopsActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setupWithShops(this.shops);
+    }
+
     public static Intent makeNotificationIntent(Context context) {
         Intent intent = new Intent(context, NearShopsActivity.class);
         return intent;
