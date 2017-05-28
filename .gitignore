@@ -43,3 +43,4 @@ gradle.xml
 modules.xml
 android/.idea
 nodejs/node_modules
+.env
