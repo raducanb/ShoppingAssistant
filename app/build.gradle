@@ -31,4 +31,5 @@ dependencies {
     compile 'com.google.android.gms:play-services:9.6.1'
     compile 'com.streethawk:geofence:1.8.9'
     compile 'com.android.support:multidex:1.0.1'
+    compile 'com.amitshekhar.android:android-networking:1.0.0'
 }
