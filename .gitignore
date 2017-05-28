@@ -41,3 +41,4 @@ captures/
 .idea/libraries
 gradle.xml
 modules.xml
+android/.idea
