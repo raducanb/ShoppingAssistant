@@ -30,8 +30,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name="com.example.raducanbogdan.shoppingassistant.MyApplication">
+        android:theme="@style/AppTheme">
         <service android:name=".GeofenceTransitionService" />
 
 
@@ -45,10 +44,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".MyApplication" />
         <activity android:name=".AddShoppingItemActivity" />
         <activity android:name=".ShopsMapActivity" />
         <activity android:name=".NearShopsActivity" />
-        <activity android:name=".ShopDetailsActivity"></activity>
+        <activity android:name=".ShopDetailsActivity" />
     </application>
 
 </manifest>
