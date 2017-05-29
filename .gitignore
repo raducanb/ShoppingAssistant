@@ -44,3 +44,4 @@ modules.xml
 android/.idea
 nodejs/node_modules
 .env
+nodejs/.vscode
