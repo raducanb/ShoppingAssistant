@@ -8,10 +8,17 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.widget.ListView;
+
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONArrayRequestListener;
+
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,6 +36,21 @@ public class ShoppingListActivity
         setContentView(R.layout.activity_shopping_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        AndroidNetworking.get("http://10.0.2.2:3000")
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        // do anything with response
+                        Log.d("t", "onResponse: " + response);
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        // handle error
+                        Log.d("t", "onError: " + error);
+                    }
+                });
 
         requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         this.geofencingManager = new GeofencingManager();
