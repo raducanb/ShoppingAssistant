@@ -17,15 +17,20 @@ import android.widget.ListView;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class ShoppingListActivity
         extends AppCompatActivity
         implements ShoppingListAdapterProtocol {
+    private int userId;
     private ShoppingList shoppingList;
     private ShoppingListAdapter shoppingListAdapter;
     private GeofencingManager geofencingManager;
@@ -37,26 +42,15 @@ public class ShoppingListActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        AndroidNetworking.get("http://10.0.2.2:3000")
-                .build()
-                .getAsJSONArray(new JSONArrayRequestListener() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        // do anything with response
-                        Log.d("t", "onResponse: " + response);
-                    }
-                    @Override
-                    public void onError(ANError error) {
-                        // handle error
-                        Log.d("t", "onError: " + error);
-                    }
-                });
+        userId = getIntent().getIntExtra("userId", 0);
+        shoppingList = (ShoppingList)getIntent().getSerializableExtra("shoppingList");
+
+        setTitle(shoppingList.name);
 
         requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         this.geofencingManager = new GeofencingManager();
 
-        setupShoppingListView((ListView)findViewById(R.id.shopping_list_view));
-        setupAddShoppingItemFAB();
+        getShoppingListItems();
     }
 
     private void addShoppingItem(ShoppingItem item) {
@@ -69,8 +63,26 @@ public class ShoppingListActivity
         this.shoppingList.removeItem(item);
         this.shoppingListAdapter.notifyDataSetChanged();
 
+        AndroidNetworking.get("http://10.0.2.2:3000/deleteItem")
+                .addQueryParameter("item_id", item.id.toString())
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        Gson gson = new Gson();
+                        Type collectionType = new TypeToken<List<ShoppingItem>>(){}.getType();
+                        shoppingList.items = gson.fromJson(response.toString(), collectionType);
+                        setupShoppingListView((ListView)findViewById(R.id.shopping_list_view));
+                        setupAddShoppingItemFAB();
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        Log.d("t", "onError: " + error);
+                    }
+                });
+
         ArrayList<Category> remainingCategories = this.shoppingList.categories();
-        boolean didRemoveLastItemWithThisCategory = !remainingCategories.contains(item.category);
+        boolean didRemoveLastItemWithThisCategory = !remainingCategories.contains(item.category());
         if (!didRemoveLastItemWithThisCategory) { return; }
 
         removeGeofencesForNeededShopsAfterItemDeleted(item, remainingCategories);
@@ -80,7 +92,7 @@ public class ShoppingListActivity
                                                                ArrayList<Category> remainingCategories) {
         ArrayList<String> shopIdsToRemoveGeofence = new ArrayList<>();
         for (Shop shop : Shops.all(this)) {
-            boolean shopDoesntHaveDeletedItemCategory = !shop.categories.contains(item.category);
+            boolean shopDoesntHaveDeletedItemCategory = !shop.categories.contains(item.category());
             if (shopDoesntHaveDeletedItemCategory) { continue; }
             boolean shopHasOtherItemsCategories =
                     !Collections.disjoint(shop.categories, remainingCategories);
@@ -94,7 +106,7 @@ public class ShoppingListActivity
     }
 
     private void addGeofenceForShoppingItem(ShoppingItem item) {
-        this.geofencingManager.addGeofencesForShopsThatHaveCategory(this, Shops.all(this), item.category);
+        this.geofencingManager.addGeofencesForShopsThatHaveCategory(this, Shops.all(this), item.category());
     }
 
     private void setupAddShoppingItemFAB() {
@@ -103,15 +115,34 @@ public class ShoppingListActivity
             @Override
             public void onClick(View view) {
                 Intent myIntent = new Intent(ShoppingListActivity.this, AddShoppingItemActivity.class);
+                myIntent.putExtra("list_id", shoppingList.id.toString());
                 ShoppingListActivity.this.startActivityForResult(myIntent, 0);
             }
         });
     }
 
+    private void getShoppingListItems() {
+        AndroidNetworking.get("http://10.0.2.2:3000/shoppingListProducts")
+                .addQueryParameter("shopping_list_id", shoppingList.id.toString())
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        Gson gson = new Gson();
+                        Type collectionType = new TypeToken<List<ShoppingItem>>(){}.getType();
+                        shoppingList.items = gson.fromJson(response.toString(), collectionType);
+                        setupShoppingListView((ListView)findViewById(R.id.shopping_list_view));
+                        setupAddShoppingItemFAB();
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        Log.d("t", "onError: " + error);
+                    }
+                });
+    }
+
     private void setupShoppingListView(ListView shoppingListView) {
-        this.shoppingList = new ShoppingList(this);
-        ArrayList shoppingItems = this.shoppingList.items();
-        this.shoppingListAdapter = new ShoppingListAdapter(this, shoppingItems);
+        this.shoppingListAdapter = new ShoppingListAdapter(this, shoppingList.items);
         this.shoppingListAdapter.delegate = this;
         shoppingListView.setAdapter(this.shoppingListAdapter);
     }

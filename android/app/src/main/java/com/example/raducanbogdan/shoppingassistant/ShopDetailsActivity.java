@@ -43,7 +43,7 @@ implements OnMapReadyCallback, ShoppingListAdapterProtocol,
 
         Intent intent = getIntent();
         this.shop = (Shop) intent.getSerializableExtra("shop");
-        this.shoppingList = new ShoppingList(this);
+        this.shoppingList = new ShoppingList();
 
         requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         this.geofencingManager = new GeofencingManager();
@@ -56,7 +56,7 @@ implements OnMapReadyCallback, ShoppingListAdapterProtocol,
     private void setupItemsForCurrentShop() {
         ArrayList<ShoppingItem> items = new ArrayList<>();
         for (ShoppingItem item : this.shoppingList.items()) {
-            if (!shop.categories.contains(item.category)) {
+            if (!shop.categories.contains(item.category())) {
                 continue;
             }
             items.add(item);
@@ -126,7 +126,7 @@ implements OnMapReadyCallback, ShoppingListAdapterProtocol,
         this.shoppingListAdapter.notifyDataSetChanged();
 
         ArrayList<Category> remainingCategories = this.shoppingList.categories();
-        boolean didRemoveLastItemWithThisCategory = !remainingCategories.contains(item.category);
+        boolean didRemoveLastItemWithThisCategory = !remainingCategories.contains(item.category());
         if (!didRemoveLastItemWithThisCategory) {
             return;
         }
@@ -154,7 +154,7 @@ implements OnMapReadyCallback, ShoppingListAdapterProtocol,
                                                                ArrayList<Category> remainingCategories) {
         ArrayList<String> shopIdsToRemoveGeofence = new ArrayList<>();
         for (Shop shop : Shops.all(this)) {
-            boolean shopDoesntHaveDeletedItemCategory = !shop.categories.contains(item.category);
+            boolean shopDoesntHaveDeletedItemCategory = !shop.categories.contains(item.category());
             if (shopDoesntHaveDeletedItemCategory) {
                 continue;
             }

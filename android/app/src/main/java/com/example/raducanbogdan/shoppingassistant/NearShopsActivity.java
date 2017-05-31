@@ -85,7 +85,7 @@ public class NearShopsActivity extends AppCompatActivity {
 
     private ArrayList<String> titlesWithNrOfProductsForShops(ArrayList<Shop> shops) {
         ArrayList<String> titles = new ArrayList<>();
-        ShoppingList list = new ShoppingList(this);
+        ShoppingList list = new ShoppingList();
         for (Shop shop : shops) {
             titles.add(titleWithNrOfProductsForShop(shop, list));
         }
@@ -104,7 +104,7 @@ public class NearShopsActivity extends AppCompatActivity {
     private int nrOfProductsForShopAndShoppingList(Shop shop, ShoppingList list) {
         int nrOfProducts = 0;
         for (ShoppingItem item : list.items()) {
-            if (!shop.categories.contains(item.category)) { continue; }
+            if (!shop.categories.contains(item.category())) { continue; }
             nrOfProducts++;
         }
         return nrOfProducts;

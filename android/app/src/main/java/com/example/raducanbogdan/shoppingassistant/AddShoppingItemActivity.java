@@ -5,14 +5,26 @@ import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Spinner;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONArray;
+
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 public class AddShoppingItemActivity extends AppCompatActivity {
 
@@ -58,6 +70,21 @@ public class AddShoppingItemActivity extends AppCompatActivity {
         ShoppingItem item = createShoppingItem();
         if (item == null) { return; }
 
+        AndroidNetworking.get("http://10.0.2.2:3000/addItem")
+                .addQueryParameter("last_item_id", Integer.toString(3))
+                .addQueryParameter("name", item.name)
+                .addQueryParameter("list_id", getIntent().getStringExtra("list_id"))
+                .addQueryParameter("category_id", item.categoryId.toString())
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                    }
+                });
+
         Intent intent = new Intent();
         intent.putExtra("item", (Serializable)item);
         setResult(Activity.RESULT_OK, intent);
@@ -87,8 +114,9 @@ public class AddShoppingItemActivity extends AppCompatActivity {
     }
 
     private Category selectedCategory() {
-        Spinner spinner = (Spinner)findViewById(R.id.categories_spinner);
-        int selectedPos = spinner.getSelectedItemPosition();
-        return Categories.all(this).get(selectedPos);
+        return new Category("Categorie1", "1");
+//        Spinner spinner = (Spinner)findViewById(R.id.categories_spinner);
+//        int selectedPos = spinner.getSelectedItemPosition();
+//        return Categories.all(this).get(selectedPos);
     }
 }
